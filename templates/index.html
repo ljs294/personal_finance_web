@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .card .amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .card.income .amount {
+            color: #27ae60;
+        }
+
+        .card.expenses .amount {
+            color: #e74c3c;
+        }
+
+        .card.balance .amount {
+            color: #3498db;
+        }
+
+        .card .subtitle {
+            color: #95a5a6;
+            font-size: 0.85rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .transaction-list {
+            list-style: none;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-category {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .transaction-amount.positive {
+            color: #27ae60;
+        }
+
+        .transaction-amount.negative {
+            color: #e74c3c;
+        }
+
+        .add-transaction-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-transaction-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #ecf0f1;
+            gap: 1rem;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-name-section {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 150px;
+        }
+
+        .category-name {
+            font-weight: 500;
+        }
+
+        .subcategory-badge {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .category-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-bar-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+        }
+
+        .category-amount {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .edit-categories-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .edit-categories-btn:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .transaction-type-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #dfe6e9;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .type-btn:hover {
+            border-color: #3498db;
+        }
+
+        .type-btn.active {
+            border-color: #3498db;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .type-btn.income.active {
+            border-color: #27ae60;
+            background-color: #27ae60;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .category-manager {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-tree-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 0.25rem;
+        }
+
+        .category-row.subcategory {
+            margin-left: 2rem;
+            background-color: #e9ecef;
+        }
+
+        .category-row input {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .category-icon {
+            font-size: 1.2rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-sub {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-add-sub:hover {
+            background-color: #229954;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .add-category-section {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .add-category-section input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .add-category-section button {
+            padding: 0.75rem 1.5rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-category-section button:hover {
+            background-color: #2980b9;
+        }
+
+        .subcategory-container {
+            margin-left: 1rem;
+            border-left: 3px solid #dfe6e9;
+            padding-left: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">💰 Budget Tracker</div>
+            <ul class="nav-links">
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#transactions">Transactions</a></li>
+                <li><a href="#reports">Reports</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="summary-cards">
+            <div class="card income">
+                <h3>Total Income</h3>
+                <div class="amount" id="totalIncome">$0</div>
+                <div class="subtitle" id="incomeChange">Loading...</div>
+            </div>
+            <div class="card expenses">
+                <h3>Total Expenses</h3>
+                <div class="amount" id="totalExpenses">$0</div>
+                <div class="subtitle" id="expensesChange">Loading...</div>
+            </div>
+            <div class="card balance">
+                <h3>Current Balance</h3>
+                <div class="amount" id="currentBalance">$0</div>
+                <div class="subtitle">Available to spend</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>Recent Transactions</h2>
+                <ul class="transaction-list" id="transactionList">
+                    <!-- Transactions will be loaded here -->
+                </ul>
+                <button class="add-transaction-btn" onclick="openTransactionModal()">+ Add Transaction</button>
+            </div>
+
+            <div class="section">
+                <h2>Spending by Category</h2>
+                <div id="categoryDisplay">
+                    <!-- Categories will be dynamically generated here -->
+                </div>
+                <button class="edit-categories-btn" onclick="openCategoriesModal()">Edit Categories</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Transaction -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Transaction</h2>
+                <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
+            </div>
+            <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
+                <div class="transaction-type-toggle">
+                    <button type="button" class="type-btn expense active" onclick="setTransactionType('expense', this)">Expense</button>
+                    <button type="button" class="type-btn income" onclick="setTransactionType('income', this)">Income</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="transactionName">Description</label>
+                    <input type="text" id="transactionName" name="name" placeholder="e.g., Grocery shopping" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="transactionAmount">Amount</label>
+                        <input type="number" id="transactionAmount" name="amount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="transactionDate">Date</label>
+                        <input type="date" id="transactionDate" name="date" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="transactionCategory">Category</label>
+                    <select id="transactionCategory" name="category" required>
+                        <option value="">Select a category</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="transactionNotes">Notes (optional)</label>
+                    <textarea id="transactionNotes" name="notes" rows="3" placeholder="Add any additional details..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Add Transaction</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Edit Categories -->
+    <div class="modal" id="categoriesModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>Manage Categories</h2>
+                <button class="close-btn" onclick="closeCategoriesModal()">&times;</button>
+            </div>
+            
+            <div class="category-manager" id="categoryManager">
+                <!-- Categories will be dynamically generated here -->
+            </div>
+
+            <div class="add-category-section">
+                <input type="text" id="newCategoryInput" placeholder="New category name..." onkeypress="if(event.key==='Enter') addNewCategory()">
+                <button onclick="addNewCategory()">Add Category</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let categories = [];
+        let currentTransactionType = 'expense';
+
+        // Load data on page load
+        async function loadData() {
+            await loadCategories();
+            await loadTransactions();
+            await loadCategorySpending();
+            updateSummaryCards();
+        }
+
+        // Load categories from backend
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/categories`);
+                categories = await response.json();
+                populateCategoryDropdown();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load transactions from backend
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_URL}/transactions`);
+                const transactions = await response.json();
+                renderTransactions(transactions);
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
+
+        // Load category spending from backend
+        async function loadCategorySpending() {
+            try {
+                const response = await fetch(`${API_URL}/category-spending`);
+                const spending = await response.json();
+                renderCategoryDisplay(spending);
+            } catch (error) {
+                console.error('Error loading category spending:', error);
+            }
+        }
+
+        // Render transactions list
+        function renderTransactions(transactions) {
+            const list = document.getElementById('transactionList');
+            list.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                list.innerHTML = '<li style="padding: 2rem; text-align: center; color: #7f8c8d;">No transactions yet. Add your first transaction!</li>';
+                return;
+            }
+
+            transactions.slice(0, 10).forEach(transaction => {
+                const li = document.createElement('li');
+                li.className = 'transaction-item';
+                
+                const categoryName = categories.find(c => c.id === transaction.category_id)?.name || 'Uncategorized';
+                const sign = transaction.transaction_type === 'income' ? '+' : '-';
+                const amountClass = transaction.transaction_type === 'income' ? 'positive' : 'negative';
+                
+                li.innerHTML = `
+                    <div class="transaction-info">
+                        <span class="transaction-name">${transaction.description}</span>
+                        <span class="transaction-category">${categoryName}</span>
+                    </div>
+                    <span class="transaction-amount ${amountClass}">${sign}$${transaction.amount.toFixed(2)}</span>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Update summary cards
+        async function updateSummaryCards() {
+            try {
+                const response = await fetch(`${API_URL}/transactions`);
+                const transactions = await response.json();
+                
+                const income = transactions
+                    .filter(t => t.transaction_type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const expenses = transactions
+                    .filter(t => t.transaction_type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const balance = income - expenses;
+                
+                document.getElementById('totalIncome').textContent = `$${income.toFixed(2)}`;
+                document.getElementById('totalExpenses').textContent = `$${expenses.toFixed(2)}`;
+                document.getElementById('currentBalance').textContent = `$${balance.toFixed(2)}`;
+            } catch (error) {
+                console.error('Error updating summary:', error);
+            }
+        }
+
+        // Populate category dropdown in transaction form
+        function populateCategoryDropdown() {
+            const select = document.getElementById('transactionCategory');
+            select.innerHTML = '<option value="">Select a category</option>';
+            
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                select.appendChild(option);
+                
+                // Add subcategories
+                if (category.subcategories) {
+                    category.subcategories.forEach(sub => {
+                        const subOption = document.createElement('option');
+                        subOption.value = sub.id;
+                        subOption.textContent = `  ↳ ${sub.name}`;
+                        select.appendChild(subOption);
+                    });
+                }
+            });
+        }
+
+        // Render category spending display
+        function renderCategoryDisplay(spending) {
+            const display = document.getElementById('categoryDisplay');
+            display.innerHTML = '';
+            
+            if (spending.length === 0) {
+                display.innerHTML = '<p style="padding: 1rem; text-align: center; color: #7f8c8d;">No categories yet</p>';
+                return;
+            }
+
+            const maxAmount = Math.max(...spending.map(s => s.amount), 1);
+            
+            spending.forEach(item => {
+                const percentage = (item.amount / maxAmount) * 100;
+                
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                
+                let badgeHTML = '';
+                if (item.subcategory_count > 0) {
+                    badgeHTML = `<span class="subcategory-badge">${item.subcategory_count}</span>`;
+                }
+                
+                categoryItem.innerHTML = `
+                    <div class="category-name-section">
+                        <span class="category-name">${item.category_name}</span>
+                        ${badgeHTML}
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-bar-fill" style="width: ${percentage}%;"></div>
+                    </div>
+                    <span class="category-amount">$${item.amount.toFixed(2)}</span>
+                `;
+                
+                display.appendChild(categoryItem);
+            });
+        }
+
+        // Transaction Modal Functions
+        function openTransactionModal() {
+            document.getElementById('transactionModal').classList.add('active');
+            document.getElementById('transactionDate').valueAsDate = new Date();
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').classList.remove('active');
+        }
+
+        function setTransactionType(type, button) {
+            currentTransactionType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+
+        async function handleTransactionSubmit(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const transaction = {
+                description: formData.get('name'),
+                amount: parseFloat(formData.get('amount')),
+                date: formData.get('date'),
+                transaction_type: currentTransactionType,
+                category_id: parseInt(formData.get('category')) || null,
+                notes: formData.get('notes')
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/transactions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(transaction)
+                });
+
+                if (response.ok) {
+                    alert('Transaction added successfully!');
+                    closeTransactionModal();
+                    event.target.reset();
+                    await loadTransactions();
+                    await loadCategorySpending();
+                    await updateSummaryCards();
+                }
+            } catch (error) {
+                console.error('Error adding transaction:', error);
+                alert('Error adding transaction. Please try again.');
+            }
+        }
+
+        // Categories Modal Functions
+        function openCategoriesModal() {
+            renderCategories();
+            document.getElementById('categoriesModal').classList.add('active');
+        }
+
+        function closeCategoriesModal() {
+            document.getElementById('categoriesModal').classList.remove('active');
+            loadCategories();
+            loadCategorySpending();
+        }
+
+        function renderCategories() {
+            const manager = document.getElementById('categoryManager');
+            manager.innerHTML = '';
+            
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-tree-item';
+                
+                const categoryRow = document.createElement('div');
+                categoryRow.className = 'category-row';
+                categoryRow.innerHTML = `
+                    <span class="category-icon">📁</span>
+                    <input type="text" value="${category.name}" onchange="updateCategoryName(${category.id}, this.value)">
+                    <button class="btn-small btn-add-sub" onclick="addSubcategory(${category.id})">+ Sub</button>
+                    <button class="btn-small btn-delete" onclick="deleteCategory(${category.id})">Delete</button>
+                `;
+                
+                categoryDiv.appendChild(categoryRow);
+                
+                if (category.subcategories && category.subcategories.length > 0) {
+                    const subContainer = document.createElement('div');
+                    subContainer.className = 'subcategory-container';
+                    
+                    category.subcategories.forEach(sub => {
+                        const subRow = document.createElement('div');
+                        subRow.className = 'category-row subcategory';
+                        subRow.innerHTML = `
+                            <span class="category-icon">📄</span>
+                            <input type="text" value="${sub.name}" onchange="updateSubcategoryName(${sub.id}, this.value)">
+                            <button class="btn-small btn-delete" onclick="deleteCategory(${sub.id})">Delete</button>
+                        `;
+                        subContainer.appendChild(subRow);
+                    });
+                    
+                    categoryDiv.appendChild(subContainer);
+                }
+                
+                manager.appendChild(categoryDiv);
+            });
+        }
+
+        async function updateCategoryName(categoryId, newName) {
+            try {
+                await fetch(`${API_URL}/categories/${categoryId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+            } catch (error) {
+                console.error('Error updating category:', error);
+            }
+        }
+
+        async function updateSubcategoryName(subId, newName) {
+            await updateCategoryName(subId, newName);
+        }
+
+        async function addSubcategory(parentId) {
+            try {
+                const response = await fetch(`${API_URL}/categories`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'New Subcategory',
+                        parent_id: parentId
+                    })
+                });
+
+                if (response.ok) {
+                    await loadCategories();
+                    renderCategories();
+                }
+            } catch (error) {
+                console.error('Error adding subcategory:', error);
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Delete this category? This will also delete all its subcategories and associated transactions.')) {
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/categories/${categoryId}`, {
+                    method: 'DELETE'
+                });
+                await loadCategories();
+                renderCategories();
+            } catch (error) {
+                console.error('Error deleting category:', error);
+            }
+        }
+
+        async function addNewCategory() {
+            const input = document.getElementById('newCategoryInput');
+            const categoryName = input.value.trim();
+            
+            if (!categoryName) return;
+
+            try {
+                const response = await fetch(`${API_URL}/categories`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: categoryName,
+                        parent_id: null
+                    })
+                });
+
+                if (response.ok) {
+                    input.value = '';
+                    await loadCategories();
+                    renderCategories();
+                }
+            } catch (error) {
+                console.error('Error adding category:', error);
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const transactionModal = document.getElementById('transactionModal');
+            const categoriesModal = document.getElementById('categoriesModal');
+            
+            if (event.target === transactionModal) {
+                closeTransactionModal();
+            }
+            if (event.target === categoriesModal) {
+                closeCategoriesModal();
+            }
+        };
+
+        // Initialize app
+        window.onload = function() {
+            loadData();
+        };
+    </script>
+</body>
+</html>
