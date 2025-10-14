@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from models import db, Category, Transaction
+from models import db, Category, Transaction, Budget
 from config import Config
 from datetime import datetime
 
@@ -22,7 +22,8 @@ def index():
 # Category routes
 @app.route('/api/categories', methods=['GET'])
 def get_categories():
-    categories = Category.query.filter_by(parent_id=None).all()
+    category_type = request.args.get('type', 'expense')
+    categories = Category.query.filter_by(parent_id=None, category_type=category_type).all()
     return jsonify([cat.to_dict() for cat in categories])
 
 @app.route('/api/categories', methods=['POST'])
@@ -30,7 +31,8 @@ def create_category():
     data = request.json
     category = Category(
         name=data['name'],
-        parent_id=data.get('parent_id')
+        parent_id=data.get('parent_id'),
+        category_type=data.get('category_type', 'expense')
     )
     db.session.add(category)
     db.session.commit()
@@ -81,7 +83,7 @@ def delete_transaction(id):
 
 @app.route('/api/category-spending', methods=['GET'])
 def get_category_spending():
-    categories = Category.query.filter_by(parent_id=None).all()
+    categories = Category.query.filter_by(parent_id=None, category_type='expense').all()
     spending = []
     
     for cat in categories:
@@ -98,6 +100,148 @@ def get_category_spending():
         })
     
     return jsonify(spending)
+
+# Budget routes
+@app.route('/api/budgets', methods=['GET'])
+def get_budgets():
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not month or not year:
+        now = datetime.now()
+        month = now.month
+        year = now.year
+    
+    budgets = Budget.query.filter_by(month=month, year=year).all()
+    return jsonify([b.to_dict() for b in budgets])
+
+@app.route('/api/budgets', methods=['POST'])
+def create_or_update_budget():
+    data = request.json
+    
+    existing_budget = Budget.query.filter_by(
+        category_id=data['category_id'],
+        month=data['month'],
+        year=data['year']
+    ).first()
+    
+    if existing_budget:
+        existing_budget.amount = data['amount']
+        db.session.commit()
+        return jsonify(existing_budget.to_dict())
+    else:
+        budget = Budget(
+            category_id=data['category_id'],
+            amount=data['amount'],
+            month=data['month'],
+            year=data['year']
+        )
+        db.session.add(budget)
+        db.session.commit()
+        return jsonify(budget.to_dict()), 201
+
+@app.route('/api/budgets/<int:id>', methods=['DELETE'])
+def delete_budget(id):
+    budget = Budget.query.get_or_404(id)
+    db.session.delete(budget)
+    db.session.commit()
+    return '', 204
+
+@app.route('/api/budget-overview', methods=['GET'])
+def get_budget_overview():
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    category_type = request.args.get('type', 'expense')
+
+    if not month or not year:
+        now = datetime.now()
+        month = now.month
+        year = now.year
+
+    from sqlalchemy import extract
+
+    categories = Category.query.filter_by(parent_id=None, category_type=category_type).all()
+    overview = []
+
+    for cat in categories:
+        budget = Budget.query.filter_by(
+            category_id=cat.id,
+            month=month,
+            year=year
+        ).first()
+
+        if category_type == 'income':
+            actual = db.session.query(db.func.sum(Transaction.amount)).filter(
+                Transaction.category_id == cat.id,
+                Transaction.transaction_type == 'income',
+                extract('month', Transaction.date) == month,
+                extract('year', Transaction.date) == year
+            ).scalar() or 0
+        else:
+            actual = db.session.query(db.func.sum(Transaction.amount)).filter(
+                Transaction.category_id == cat.id,
+                Transaction.transaction_type == 'expense',
+                extract('month', Transaction.date) == month,
+                extract('year', Transaction.date) == year
+            ).scalar() or 0
+
+        # Process subcategories
+        subcategories_data = []
+        total_sub_budgeted = 0
+        total_sub_actual = 0
+
+        for sub in cat.subcategories:
+            sub_budget = Budget.query.filter_by(
+                category_id=sub.id,
+                month=month,
+                year=year
+            ).first()
+
+            if category_type == 'income':
+                sub_actual = db.session.query(db.func.sum(Transaction.amount)).filter(
+                    Transaction.category_id == sub.id,
+                    Transaction.transaction_type == 'income',
+                    extract('month', Transaction.date) == month,
+                    extract('year', Transaction.date) == year
+                ).scalar() or 0
+            else:
+                sub_actual = db.session.query(db.func.sum(Transaction.amount)).filter(
+                    Transaction.category_id == sub.id,
+                    Transaction.transaction_type == 'expense',
+                    extract('month', Transaction.date) == month,
+                    extract('year', Transaction.date) == year
+                ).scalar() or 0
+
+            sub_budgeted = sub_budget.amount if sub_budget else 0
+            total_sub_budgeted += sub_budgeted
+            total_sub_actual += sub_actual
+
+            subcategories_data.append({
+                'category_id': sub.id,
+                'category_name': sub.name,
+                'budgeted': sub_budgeted,
+                'actual': sub_actual,
+                'difference': sub_actual - sub_budgeted,
+                'is_subcategory': True
+            })
+
+        # Parent category budgeted is sum of subcategories, actual includes parent + subs
+        parent_budgeted = budget.amount if budget else 0
+        combined_budgeted = parent_budgeted + total_sub_budgeted
+        combined_actual = actual + total_sub_actual
+
+        overview.append({
+            'category_id': cat.id,
+            'category_name': cat.name,
+            'budgeted': combined_budgeted,
+            'actual': combined_actual,
+            'difference': combined_actual - combined_budgeted,
+            'subcategory_count': len(cat.subcategories),
+            'subcategories': subcategories_data,
+            'is_subcategory': False
+        })
+
+    return jsonify(overview)
 
 if __name__ == '__main__':
     app.run(debug=True)
