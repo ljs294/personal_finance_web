@@ -1,0 +1,189 @@
+{
+  "month": 9,
+  "year": 2024,
+  "budgets": [
+    {
+      "category_name": "Housing",
+      "category_id": 1,
+      "amount": 1500.00,
+      "subcategories": [
+        {
+          "category_name": "Rent",
+          "category_id": 11,
+          "amount": 1200.00
+        },
+        {
+          "category_name": "Utilities",
+          "category_id": 12,
+          "amount": 150.00
+        },
+        {
+          "category_name": "Internet",
+          "category_id": 13,
+          "amount": 60.00
+        }
+      ]
+    },
+    {
+      "category_name": "Food",
+      "category_id": 2,
+      "amount": 200.00,
+      "subcategories": [
+        {
+          "category_name": "Groceries",
+          "category_id": 21,
+          "amount": 400.00
+        },
+        {
+          "category_name": "Restaurants",
+          "category_id": 22,
+          "amount": 150.00
+        },
+        {
+          "category_name": "Coffee Shops",
+          "category_id": 23,
+          "amount": 50.00
+        }
+      ]
+    },
+    {
+      "category_name": "Transportation",
+      "category_id": 3,
+      "amount": 100.00,
+      "subcategories": [
+        {
+          "category_name": "Gas",
+          "category_id": 31,
+          "amount": 200.00
+        },
+        {
+          "category_name": "Car Insurance",
+          "category_id": 32,
+          "amount": 120.00
+        },
+        {
+          "category_name": "Maintenance",
+          "category_id": 33,
+          "amount": 80.00
+        }
+      ]
+    },
+    {
+      "category_name": "Entertainment",
+      "category_id": 4,
+      "amount": 100.00,
+      "subcategories": [
+        {
+          "category_name": "Streaming Services",
+          "category_id": 41,
+          "amount": 45.00
+        },
+        {
+          "category_name": "Movies & Events",
+          "category_id": 42,
+          "amount": 75.00
+        },
+        {
+          "category_name": "Hobbies",
+          "category_id": 43,
+          "amount": 80.00
+        }
+      ]
+    },
+    {
+      "category_name": "Shopping",
+      "category_id": 5,
+      "amount": 150.00,
+      "subcategories": [
+        {
+          "category_name": "Clothing",
+          "category_id": 51,
+          "amount": 100.00
+        },
+        {
+          "category_name": "Electronics",
+          "category_id": 52,
+          "amount": 150.00
+        },
+        {
+          "category_name": "Home Goods",
+          "category_id": 53,
+          "amount": 75.00
+        }
+      ]
+    },
+    {
+      "category_name": "Health & Fitness",
+      "category_id": 6,
+      "amount": 50.00,
+      "subcategories": [
+        {
+          "category_name": "Gym Membership",
+          "category_id": 61,
+          "amount": 50.00
+        },
+        {
+          "category_name": "Doctor Visits",
+          "category_id": 62,
+          "amount": 100.00
+        },
+        {
+          "category_name": "Medications",
+          "category_id": 63,
+          "amount": 30.00
+        }
+      ]
+    },
+    {
+      "category_name": "Personal Care",
+      "category_id": 7,
+      "amount": 50.00,
+      "subcategories": [
+        {
+          "category_name": "Haircuts",
+          "category_id": 71,
+          "amount": 40.00
+        },
+        {
+          "category_name": "Toiletries",
+          "category_id": 72,
+          "amount": 35.00
+        }
+      ]
+    },
+    {
+      "category_name": "Savings & Investments",
+      "category_id": 8,
+      "amount": 500.00,
+      "subcategories": [
+        {
+          "category_name": "Emergency Fund",
+          "category_id": 81,
+          "amount": 300.00
+        },
+        {
+          "category_name": "Retirement",
+          "category_id": 82,
+          "amount": 200.00
+        }
+      ]
+    }
+  ],
+  "income_budgets": [
+    {
+      "category_name": "Salary",
+      "category_id": 101,
+      "amount": 4500.00
+    },
+    {
+      "category_name": "Freelance",
+      "category_id": 102,
+      "amount": 800.00
+    },
+    {
+      "category_name": "Investment Returns",
+      "category_id": 103,
+      "amount": 150.00
+    }
+  ]
+}

@@ -74,6 +74,21 @@ def create_transaction():
     db.session.commit()
     return jsonify(transaction.to_dict()), 201
 
+@app.route('/api/transactions/<int:id>', methods=['PUT'])
+def update_transaction(id):
+    transaction = Transaction.query.get_or_404(id)
+    data = request.json
+
+    transaction.description = data['description']
+    transaction.amount = data['amount']
+    transaction.date = datetime.fromisoformat(data['date'])
+    transaction.transaction_type = data['transaction_type']
+    transaction.category_id = data.get('category_id')
+    transaction.notes = data.get('notes')
+
+    db.session.commit()
+    return jsonify(transaction.to_dict())
+
 @app.route('/api/transactions/<int:id>', methods=['DELETE'])
 def delete_transaction(id):
     transaction = Transaction.query.get_or_404(id)
@@ -81,24 +96,154 @@ def delete_transaction(id):
     db.session.commit()
     return '', 204
 
+@app.route('/api/category-details/<int:category_id>', methods=['GET'])
+def get_category_details(category_id):
+    from sqlalchemy import extract
+
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+
+    if not month or not year:
+        now = datetime.now()
+        month = now.month
+        year = now.year
+
+    # Get the category
+    category = Category.query.get_or_404(category_id)
+
+    # Get budget for parent category
+    parent_budget = Budget.query.filter_by(
+        category_id=category_id,
+        month=month,
+        year=year
+    ).first()
+
+    # Get spending for parent category in the current month (not including subcategories)
+    parent_spent = db.session.query(db.func.sum(Transaction.amount)).filter(
+        Transaction.category_id == category_id,
+        Transaction.transaction_type == 'expense',
+        extract('month', Transaction.date) == month,
+        extract('year', Transaction.date) == year
+    ).scalar() or 0
+
+    # Get subcategories with their budgets and spending
+    subcategories_data = []
+    total_sub_budget = 0
+    total_sub_spent = 0
+
+    for sub in category.subcategories:
+        sub_budget = Budget.query.filter_by(
+            category_id=sub.id,
+            month=month,
+            year=year
+        ).first()
+
+        sub_spent = db.session.query(db.func.sum(Transaction.amount)).filter(
+            Transaction.category_id == sub.id,
+            Transaction.transaction_type == 'expense',
+            extract('month', Transaction.date) == month,
+            extract('year', Transaction.date) == year
+        ).scalar() or 0
+
+        sub_budget_amount = sub_budget.amount if sub_budget else 0
+        total_sub_budget += sub_budget_amount
+        total_sub_spent += sub_spent
+
+        subcategories_data.append({
+            'id': sub.id,
+            'name': sub.name,
+            'budget': sub_budget_amount,
+            'spent': sub_spent
+        })
+
+    # Total budget and spent includes parent + all subcategories
+    parent_budget_amount = parent_budget.amount if parent_budget else 0
+    total_budget = parent_budget_amount + total_sub_budget
+    total_spent = parent_spent + total_sub_spent
+
+    return jsonify({
+        'category_id': category.id,
+        'category_name': category.name,
+        'budget': total_budget,
+        'spent': total_spent,
+        'parent_budget': parent_budget_amount,
+        'parent_spent': parent_spent,
+        'subcategories': subcategories_data
+    })
+
 @app.route('/api/category-spending', methods=['GET'])
 def get_category_spending():
+    from sqlalchemy import extract
+
+    # Get current month and year or from query params
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+
+    if not month or not year:
+        now = datetime.now()
+        month = now.month
+        year = now.year
+
     categories = Category.query.filter_by(parent_id=None, category_type='expense').all()
     spending = []
-    
+
     for cat in categories:
+        # Get spending for current month
         total = db.session.query(db.func.sum(Transaction.amount)).filter(
             Transaction.category_id == cat.id,
-            Transaction.transaction_type == 'expense'
+            Transaction.transaction_type == 'expense',
+            extract('month', Transaction.date) == month,
+            extract('year', Transaction.date) == year
         ).scalar() or 0
-        
+
+        # Get subcategory spending for current month
+        sub_total = 0
+        for sub in cat.subcategories:
+            sub_amount = db.session.query(db.func.sum(Transaction.amount)).filter(
+                Transaction.category_id == sub.id,
+                Transaction.transaction_type == 'expense',
+                extract('month', Transaction.date) == month,
+                extract('year', Transaction.date) == year
+            ).scalar() or 0
+            sub_total += sub_amount
+
+        combined_total = total + sub_total
+
+        # Get budget for current month (parent + subcategories)
+        budget = Budget.query.filter_by(
+            category_id=cat.id,
+            month=month,
+            year=year
+        ).first()
+
+        parent_budget = budget.amount if budget else 0
+        sub_budget_total = 0
+
+        for sub in cat.subcategories:
+            sub_budget = Budget.query.filter_by(
+                category_id=sub.id,
+                month=month,
+                year=year
+            ).first()
+            if sub_budget:
+                sub_budget_total += sub_budget.amount
+
+        combined_budget = parent_budget + sub_budget_total
+
+        # Calculate percentage
+        percentage = 0
+        if combined_budget > 0:
+            percentage = (combined_total / combined_budget) * 100
+
         spending.append({
             'category_id': cat.id,
             'category_name': cat.name,
-            'amount': total,
+            'amount': combined_total,
+            'budget': combined_budget,
+            'percentage': percentage,
             'subcategory_count': len(cat.subcategories)
         })
-    
+
     return jsonify(spending)
 
 # Budget routes

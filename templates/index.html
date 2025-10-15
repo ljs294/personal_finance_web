@@ -10,12 +10,58 @@
     <header>
         <nav>
             <div class="logo">💰 Budget Tracker</div>
-            <ul class="nav-links">
-                <li><a href="#" id="navDashboard">Dashboard</a></li>
-                <li><a href="#" id="navBudget">Budget</a></li>
-                <li><a href="#" id="navTransactions">Transactions</a></li>
-                <li><a href="#" id="navReports">Reports</a></li>
-            </ul>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#" id="navDashboard">Dashboard</a></li>
+                    <li><a href="#" id="navBudget">Budget</a></li>
+                    <li><a href="#" id="navTransactions">Transactions</a></li>
+                    <li><a href="#" id="navReports">Reports</a></li>
+                </ul>
+                <div class="theme-dropdown">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleThemeDropdown()">
+                        <svg class="theme-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <!-- Sun icon (Day mode) -->
+                            <path class="sun-icon" d="M10 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm6.364 1.636a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-1.636 6.364a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM10 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-6.364.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM5 10a1 1 0 01-1-1 1 1 0 00-1-1 1 1 0 110-2 1 1 0 011-1 1 1 0 011 1v1a1 1 0 01-1 1zm-.636-6.364a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM10 7a3 3 0 100 6 3 3 0 000-6z"/>
+                            <!-- Moon icon (Night mode) -->
+                            <path class="moon-icon" style="display: none;" d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                            <!-- System icon (Auto mode) -->
+                            <path class="system-icon" style="display: none;" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm10 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                        </svg>
+                        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                            <path d="M2 4l4 4 4-4"/>
+                        </svg>
+                    </button>
+                    <div class="theme-dropdown-menu" id="themeDropdownMenu">
+                        <div class="theme-option" onclick="selectTheme('day')">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3a1 1 0 011 1v1a1 1 0 11-2 0V4a1 1 0 011-1zm6.364 1.636a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-1.636 6.364a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM10 15a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-6.364.364a1 1 0 010-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414 0zM5 10a1 1 0 01-1-1 1 1 0 00-1-1 1 1 0 110-2 1 1 0 011-1 1 1 0 011 1v1a1 1 0 01-1 1zm-.636-6.364a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM10 7a3 3 0 100 6 3 3 0 000-6z"/>
+                            </svg>
+                            <span>Day</span>
+                            <svg class="checkmark" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                        </div>
+                        <div class="theme-option" onclick="selectTheme('night')">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                            </svg>
+                            <span>Night</span>
+                            <svg class="checkmark" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                        </div>
+                        <div class="theme-option" onclick="selectTheme('system')">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm10 0a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                            </svg>
+                            <span>System</span>
+                            <svg class="checkmark" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -132,15 +178,15 @@
     </div>
 </div>
 
-    <!-- Modal for Add Transaction -->
+    <!-- Modal for Add/Edit Transaction -->
     <div class="modal" id="transactionModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add Transaction</h2>
+                <h2 id="transactionModalTitle">Add Transaction</h2>
                 <button class="close-btn" onclick="closeTransactionModal()">&times;</button>
             </div>
             <form id="transactionForm" onsubmit="handleTransactionSubmit(event)">
-                <div class="transaction-type-toggle">
+                <div class="transaction-type-toggle" id="transactionTypeToggle">
                     <button type="button" class="type-btn expense active" onclick="setTransactionType('expense', this)">Expense</button>
                     <button type="button" class="type-btn income" onclick="setTransactionType('income', this)">Income</button>
                 </div>
@@ -174,7 +220,20 @@
                     <textarea id="transactionNotes" name="notes" rows="3" placeholder="Add any additional details..."></textarea>
                 </div>
 
-                <button type="submit" class="submit-btn">Add Transaction</button>
+                <div class="modal-actions">
+                    <button type="submit" class="modal-action-btn save-btn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                        </svg>
+                        <span id="saveButtonText">Save</span>
+                    </button>
+                    <button type="button" class="modal-action-btn discard-btn" onclick="discardTransactionChanges()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                        Discard
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -194,6 +253,19 @@
             <div class="add-category-section">
                 <input type="text" id="newCategoryInput" placeholder="New category name..." onkeypress="if(event.key==='Enter') addNewCategory()">
                 <button onclick="addNewCategory()">Add Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Category Details -->
+    <div class="modal" id="categoryDetailsModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="categoryDetailsTitle">Category Details</h2>
+                <button class="close-btn" onclick="closeCategoryDetailsModal()">&times;</button>
+            </div>
+            <div id="categoryDetailsContent">
+                <!-- Category details will be loaded here -->
             </div>
         </div>
     </div>
@@ -225,6 +297,104 @@
         let currentBudgetMonth = new Date().getMonth() + 1;
         let currentBudgetYear = new Date().getFullYear();
         let currentSection = 'dashboard';
+        let allTransactions = [];
+        let editingTransactionId = null;
+        let originalTransactionData = null;
+
+        // Theme management
+        let currentTheme = 'day'; // 'day', 'night', 'system'
+
+        function initTheme() {
+            // Load saved theme preference or default to 'system'
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            currentTheme = savedTheme;
+            applyTheme();
+        }
+
+        function toggleThemeDropdown() {
+            const dropdown = document.getElementById('themeDropdownMenu');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+            updateThemeCheckmarks();
+            // Close dropdown
+            document.getElementById('themeDropdownMenu').classList.remove('active');
+        }
+
+        function updateThemeCheckmarks() {
+            // Remove all active states
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
+            });
+
+            // Add active state to current theme
+            const options = document.querySelectorAll('.theme-option');
+            if (currentTheme === 'day') {
+                options[0].classList.add('active');
+            } else if (currentTheme === 'night') {
+                options[1].classList.add('active');
+            } else {
+                options[2].classList.add('active');
+            }
+        }
+
+        function applyTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            const systemIcon = document.querySelector('.system-icon');
+            const body = document.body;
+
+            // Hide all icons first
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'none';
+            systemIcon.style.display = 'none';
+
+            let shouldBeDark = false;
+
+            if (currentTheme === 'day') {
+                sunIcon.style.display = 'block';
+                shouldBeDark = false;
+            } else if (currentTheme === 'night') {
+                moonIcon.style.display = 'block';
+                shouldBeDark = true;
+            } else { // system
+                systemIcon.style.display = 'block';
+                // Check system preference
+                shouldBeDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            // Apply or remove dark mode class
+            if (shouldBeDark) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Update checkmarks
+            updateThemeCheckmarks();
+        }
+
+        // Listen for system theme changes when in system mode
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (currentTheme === 'system') {
+                applyTheme();
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('themeDropdownMenu');
+            const toggleButton = document.getElementById('themeToggle');
+
+            if (!dropdown.contains(event.target) && !toggleButton.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
 
         // Load data on page load
         async function loadData() {
@@ -260,8 +430,8 @@
         async function loadTransactions() {
             try {
                 const response = await fetch(`${API_URL}/transactions`);
-                const transactions = await response.json();
-                renderTransactions(transactions);
+                allTransactions = await response.json();
+                renderTransactions(allTransactions);
             } catch (error) {
                 console.error('Error loading transactions:', error);
             }
@@ -282,7 +452,7 @@
         function renderTransactions(transactions) {
             const list = document.getElementById('transactionList');
             list.innerHTML = '';
-            
+
             if (transactions.length === 0) {
                 list.innerHTML = '<li style="padding: 2rem; text-align: center; color: #7f8c8d;">No transactions yet. Add your first transaction!</li>';
                 return;
@@ -291,20 +461,135 @@
             transactions.slice(0, 10).forEach(transaction => {
                 const li = document.createElement('li');
                 li.className = 'transaction-item';
-                
-                const categoryName = categories.find(c => c.id === transaction.category_id)?.name || 'Uncategorized';
+                li.dataset.id = transaction.id;
+
+                // Get category name with proper hierarchy
+                let categoryName = 'Uncategorized';
+                if (transaction.category_id) {
+                    // Use appropriate category list based on transaction type
+                    const categoryList = transaction.transaction_type === 'income' ? incomeCategories : categories;
+
+                    // First check if it's a top-level category
+                    let category = categoryList.find(c => c.id === transaction.category_id);
+
+                    if (category) {
+                        categoryName = category.name;
+                    } else {
+                        // Check if it's a subcategory
+                        for (const parentCat of categoryList) {
+                            if (parentCat.subcategories && parentCat.subcategories.length > 0) {
+                                const subcat = parentCat.subcategories.find(sc => sc.id === transaction.category_id);
+                                if (subcat) {
+                                    categoryName = `${parentCat.name} > ${subcat.name}`;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 const sign = transaction.transaction_type === 'income' ? '+' : '-';
                 const amountClass = transaction.transaction_type === 'income' ? 'positive' : 'negative';
-                
+
+                // Format date for display
+                const transactionDate = new Date(transaction.date);
+                const formattedDate = transactionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
                 li.innerHTML = `
                     <div class="transaction-info">
                         <span class="transaction-name">${transaction.description}</span>
-                        <span class="transaction-category">${categoryName}</span>
+                        <span class="transaction-category">${categoryName} • ${formattedDate}</span>
                     </div>
-                    <span class="transaction-amount ${amountClass}">${sign}$${transaction.amount.toFixed(2)}</span>
+                    <div class="transaction-right">
+                        <div class="transaction-actions">
+                            <button class="transaction-action-btn edit-btn" onclick="editTransaction(${transaction.id})" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5z"/>
+                                </svg>
+                            </button>
+                            <button class="transaction-action-btn delete-btn" onclick="deleteTransaction(${transaction.id})" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="transaction-amount ${amountClass}">${sign}$${transaction.amount.toFixed(2)}</span>
+                    </div>
                 `;
                 list.appendChild(li);
             });
+        }
+
+        // Edit transaction - open modal with pre-filled data
+        function editTransaction(id) {
+            const transaction = allTransactions.find(t => t.id === id);
+            if (!transaction) return;
+
+            // Store that we're editing
+            editingTransactionId = id;
+            originalTransactionData = { ...transaction };
+
+            // Update modal title
+            document.getElementById('transactionModalTitle').textContent = 'Edit Transaction';
+            document.getElementById('saveButtonText').textContent = 'Save Changes';
+
+            // Set transaction type and disable toggle during edit
+            currentTransactionType = transaction.transaction_type;
+            const expenseBtn = document.querySelector('.type-btn.expense');
+            const incomeBtn = document.querySelector('.type-btn.income');
+
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            if (transaction.transaction_type === 'income') {
+                incomeBtn.classList.add('active');
+            } else {
+                expenseBtn.classList.add('active');
+            }
+
+            // Disable type toggle when editing
+            document.getElementById('transactionTypeToggle').style.pointerEvents = 'none';
+            document.getElementById('transactionTypeToggle').style.opacity = '0.6';
+
+            // Populate form fields
+            document.getElementById('transactionName').value = transaction.description;
+            document.getElementById('transactionAmount').value = transaction.amount;
+
+            // Format date for input
+            const transactionDate = new Date(transaction.date);
+            document.getElementById('transactionDate').value = transactionDate.toISOString().split('T')[0];
+
+            document.getElementById('transactionNotes').value = transaction.notes || '';
+
+            // Populate categories and select the right one
+            populateCategoryDropdown(transaction.transaction_type);
+            document.getElementById('transactionCategory').value = transaction.category_id;
+
+            // Open modal
+            document.getElementById('transactionModal').classList.add('active');
+        }
+
+        // Delete transaction
+        async function deleteTransaction(id) {
+            if (!confirm('Are you sure you want to delete this transaction?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/transactions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadTransactions();
+                    await loadCategorySpending();
+                    await updateSummaryCards();
+                } else {
+                    alert('Failed to delete transaction');
+                }
+            } catch (error) {
+                console.error('Error deleting transaction:', error);
+                alert('Error deleting transaction. Please try again.');
+            }
         }
 
         // Update summary cards
@@ -370,56 +655,124 @@
         function renderCategoryDisplay(spending) {
             const display = document.getElementById('categoryDisplay');
             display.innerHTML = '';
-            
+
             if (spending.length === 0) {
                 display.innerHTML = '<p style="padding: 1rem; text-align: center; color: #7f8c8d;">No categories yet</p>';
                 return;
             }
 
-            const maxAmount = Math.max(...spending.map(s => s.amount), 1);
-            
             spending.forEach(item => {
-                const percentage = (item.amount / maxAmount) * 100;
-                
                 const categoryItem = document.createElement('div');
-                categoryItem.className = 'category-item';
-                
+                categoryItem.className = 'category-item clickable';
+                categoryItem.onclick = () => openCategoryDetails(item.category_id);
+
                 let badgeHTML = '';
                 if (item.subcategory_count > 0) {
                     badgeHTML = `<span class="subcategory-badge">${item.subcategory_count}</span>`;
                 }
-                
+
+                // Calculate percentage and determine bar width and text
+                let budgetPercentage = item.percentage || 0;
+                let barWidth = Math.min(budgetPercentage, 100);
+                let percentageText = '';
+                let budgetInfoHTML = '';
+
+                if (item.budget > 0) {
+                    if (budgetPercentage > 100) {
+                        // Over budget - show as full bar and display over-budget percentage
+                        barWidth = 100;
+                        const overPercentage = budgetPercentage - 100;
+                        percentageText = `${budgetPercentage.toFixed(0)}% (${overPercentage.toFixed(0)}% over)`;
+                    } else {
+                        percentageText = `${budgetPercentage.toFixed(0)}%`;
+                    }
+                    budgetInfoHTML = `<span class="category-budget-info">${percentageText} of $${item.budget.toFixed(2)}</span>`;
+                } else {
+                    budgetInfoHTML = `<span class="category-budget-info no-budget">No budget set</span>`;
+                }
+
+                // Determine gradient class based on percentage
+                let gradientClass = 'low';
+                if (budgetPercentage >= 100) {
+                    gradientClass = 'over';
+                } else if (budgetPercentage >= 80) {
+                    gradientClass = 'high';
+                } else if (budgetPercentage >= 50) {
+                    gradientClass = 'medium';
+                }
+
                 categoryItem.innerHTML = `
                     <div class="category-name-section">
                         <span class="category-name">${item.category_name}</span>
                         ${badgeHTML}
                     </div>
-                    <div class="category-bar">
-                        <div class="category-bar-fill" style="width: ${percentage}%;"></div>
+                    <div class="category-budget-bar">
+                        <div class="category-budget-bar-fill gradient-${gradientClass}" style="width: ${barWidth}%;"></div>
                     </div>
-                    <span class="category-amount">$${item.amount.toFixed(2)}</span>
+                    <div class="category-right-section">
+                        <span class="category-amount">$${item.amount.toFixed(2)}</span>
+                        ${budgetInfoHTML}
+                    </div>
                 `;
-                
+
                 display.appendChild(categoryItem);
             });
         }
 
         // Transaction Modal Functions
         function openTransactionModal() {
+            // Reset to add mode
+            editingTransactionId = null;
+            originalTransactionData = null;
+
+            document.getElementById('transactionModalTitle').textContent = 'Add Transaction';
+            document.getElementById('saveButtonText').textContent = 'Save';
+
+            // Enable type toggle
+            document.getElementById('transactionTypeToggle').style.pointerEvents = 'auto';
+            document.getElementById('transactionTypeToggle').style.opacity = '1';
+
+            // Reset to expense type
+            currentTransactionType = 'expense';
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.type-btn.expense').classList.add('active');
+
             document.getElementById('transactionModal').classList.add('active');
             document.getElementById('transactionDate').valueAsDate = new Date();
+
             // Populate categories based on current transaction type (defaults to expense)
             populateCategoryDropdown(currentTransactionType);
         }
 
         function closeTransactionModal() {
             document.getElementById('transactionModal').classList.remove('active');
-            // Reset transaction type to expense
+            document.getElementById('transactionForm').reset();
+
+            // Reset state
+            editingTransactionId = null;
+            originalTransactionData = null;
             currentTransactionType = 'expense';
+
+            // Re-enable type toggle
+            document.getElementById('transactionTypeToggle').style.pointerEvents = 'auto';
+            document.getElementById('transactionTypeToggle').style.opacity = '1';
+
+            // Reset to expense
             const expenseBtn = document.querySelector('.type-btn.expense');
             if (expenseBtn) {
                 document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
                 expenseBtn.classList.add('active');
+            }
+        }
+
+        // Discard changes in modal
+        function discardTransactionChanges() {
+            if (editingTransactionId !== null) {
+                // Editing mode - just close
+                closeTransactionModal();
+            } else {
+                // Add mode - close
+                closeTransactionModal();
             }
         }
 
@@ -464,25 +817,41 @@
             };
 
             try {
-                const response = await fetch(`${API_URL}/transactions`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(transaction)
-                });
+                let response;
+                if (editingTransactionId !== null) {
+                    // Edit mode - PUT request
+                    response = await fetch(`${API_URL}/transactions/${editingTransactionId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(transaction)
+                    });
+                } else {
+                    // Add mode - POST request
+                    response = await fetch(`${API_URL}/transactions`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(transaction)
+                    });
+                }
 
                 if (response.ok) {
-                    alert('Transaction added successfully!');
+                    const message = editingTransactionId !== null ? 'Transaction updated successfully!' : 'Transaction added successfully!';
+                    alert(message);
                     closeTransactionModal();
                     event.target.reset();
                     await loadTransactions();
                     await loadCategorySpending();
                     await updateSummaryCards();
+                } else {
+                    alert('Failed to save transaction');
                 }
             } catch (error) {
-                console.error('Error adding transaction:', error);
-                alert('Error adding transaction. Please try again.');
+                console.error('Error saving transaction:', error);
+                alert('Error saving transaction. Please try again.');
             }
         }
 
@@ -732,11 +1101,149 @@
             }
         }
 
+        // Category Details Modal Functions
+        async function openCategoryDetails(categoryId) {
+            try {
+                const now = new Date();
+                const month = now.getMonth() + 1;
+                const year = now.getFullYear();
+
+                const response = await fetch(`${API_URL}/category-details/${categoryId}?month=${month}&year=${year}`);
+                const data = await response.json();
+
+                // Update modal title
+                document.getElementById('categoryDetailsTitle').textContent = data.category_name;
+
+                // Render category details
+                renderCategoryDetails(data);
+
+                // Open modal
+                document.getElementById('categoryDetailsModal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading category details:', error);
+                alert('Error loading category details. Please try again.');
+            }
+        }
+
+        function renderCategoryDetails(data) {
+            const content = document.getElementById('categoryDetailsContent');
+
+            // Calculate percentage for parent category
+            let parentPercentage = 0;
+            let parentBarWidth = 0;
+            let parentGradientClass = 'low';
+
+            if (data.budget > 0) {
+                parentPercentage = (data.spent / data.budget) * 100;
+                parentBarWidth = Math.min(parentPercentage, 100);
+
+                if (parentPercentage >= 100) {
+                    parentGradientClass = 'over';
+                } else if (parentPercentage >= 80) {
+                    parentGradientClass = 'high';
+                } else if (parentPercentage >= 50) {
+                    parentGradientClass = 'medium';
+                }
+            }
+
+            let html = `
+                <div class="category-details-summary">
+                    <div class="details-row">
+                        <span class="details-label">Total Spent:</span>
+                        <span class="details-value spent">$${data.spent.toFixed(2)}</span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Budget:</span>
+                        <span class="details-value">${data.budget > 0 ? '$' + data.budget.toFixed(2) : 'Not set'}</span>
+                    </div>
+                    ${data.budget > 0 ? `
+                    <div class="details-row">
+                        <span class="details-label">Remaining:</span>
+                        <span class="details-value ${data.budget - data.spent >= 0 ? 'positive' : 'negative'}">$${(data.budget - data.spent).toFixed(2)}</span>
+                    </div>
+                    <div class="category-detail-bar-container">
+                        <div class="category-budget-bar large">
+                            <div class="category-budget-bar-fill gradient-${parentGradientClass}" style="width: ${parentBarWidth}%;"></div>
+                        </div>
+                        <span class="category-detail-percentage">${parentPercentage.toFixed(0)}%</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Add subcategories if they exist
+            if (data.subcategories && data.subcategories.length > 0) {
+                html += `
+                    <div class="category-details-subcategories">
+                        <h3>Subcategories</h3>
+                        <div class="subcategory-list">
+                `;
+
+                data.subcategories.forEach(sub => {
+                    let subPercentage = 0;
+                    let subBarWidth = 0;
+                    let subGradientClass = 'low';
+
+                    if (sub.budget > 0) {
+                        subPercentage = (sub.spent / sub.budget) * 100;
+                        subBarWidth = Math.min(subPercentage, 100);
+
+                        if (subPercentage >= 100) {
+                            subGradientClass = 'over';
+                        } else if (subPercentage >= 80) {
+                            subGradientClass = 'high';
+                        } else if (subPercentage >= 50) {
+                            subGradientClass = 'medium';
+                        }
+                    }
+
+                    html += `
+                        <div class="subcategory-detail-item">
+                            <div class="subcategory-detail-header">
+                                <span class="subcategory-detail-name">${sub.name}</span>
+                                <span class="subcategory-detail-amount">$${sub.spent.toFixed(2)}</span>
+                            </div>
+                            ${sub.budget > 0 ? `
+                            <div class="subcategory-detail-budget">
+                                <span class="budget-text">Budget: $${sub.budget.toFixed(2)}</span>
+                                <span class="budget-remaining ${sub.budget - sub.spent >= 0 ? 'positive' : 'negative'}">
+                                    $${(sub.budget - sub.spent).toFixed(2)} remaining
+                                </span>
+                            </div>
+                            <div class="category-detail-bar-container">
+                                <div class="category-budget-bar">
+                                    <div class="category-budget-bar-fill gradient-${subGradientClass}" style="width: ${subBarWidth}%;"></div>
+                                </div>
+                                <span class="category-detail-percentage">${subPercentage.toFixed(0)}%</span>
+                            </div>
+                            ` : `
+                            <div class="subcategory-detail-budget">
+                                <span class="budget-text no-budget">No budget set</span>
+                            </div>
+                            `}
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = html;
+        }
+
+        function closeCategoryDetailsModal() {
+            document.getElementById('categoryDetailsModal').classList.remove('active');
+        }
+
         // Close modals when clicking outside
         window.onclick = function(event) {
             const transactionModal = document.getElementById('transactionModal');
             const categoriesModal = document.getElementById('categoriesModal');
             const incomeCategoriesModal = document.getElementById('incomeCategoriesModal');
+            const categoryDetailsModal = document.getElementById('categoryDetailsModal');
 
             if (event.target === transactionModal) {
                 closeTransactionModal();
@@ -747,10 +1254,14 @@
             if (event.target === incomeCategoriesModal) {
                 closeIncomeCategoriesModal();
             }
+            if (event.target === categoryDetailsModal) {
+                closeCategoryDetailsModal();
+            }
         };
 
         // Initialize app
         window.onload = function() {
+            initTheme();
             loadData();
             updateMonthYearDisplay();
             setupNavigation();

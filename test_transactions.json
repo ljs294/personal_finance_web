@@ -1,0 +1,460 @@
+{
+  "month": 9,
+  "year": 2024,
+  "transactions": [
+    {
+      "date": "2024-09-01",
+      "description": "Monthly Rent Payment",
+      "amount": 1200.00,
+      "category_id": 11,
+      "category_name": "Rent",
+      "parent_category": "Housing",
+      "transaction_type": "expense",
+      "notes": "September rent"
+    },
+    {
+      "date": "2024-09-01",
+      "description": "Monthly Salary",
+      "amount": 4500.00,
+      "category_id": 101,
+      "category_name": "Salary",
+      "transaction_type": "income",
+      "notes": "September paycheck"
+    },
+    {
+      "date": "2024-09-03",
+      "description": "Grocery Store",
+      "amount": 87.45,
+      "category_id": 21,
+      "category_name": "Groceries",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Weekly groceries"
+    },
+    {
+      "date": "2024-09-03",
+      "description": "Gas Station",
+      "amount": 45.20,
+      "category_id": 31,
+      "category_name": "Gas",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Fill up"
+    },
+    {
+      "date": "2024-09-04",
+      "description": "Netflix Subscription",
+      "amount": 15.99,
+      "category_id": 41,
+      "category_name": "Streaming Services",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Monthly subscription"
+    },
+    {
+      "date": "2024-09-05",
+      "description": "Electric Bill",
+      "amount": 92.34,
+      "category_id": 12,
+      "category_name": "Utilities",
+      "parent_category": "Housing",
+      "transaction_type": "expense",
+      "notes": "September electricity"
+    },
+    {
+      "date": "2024-09-06",
+      "description": "Starbucks",
+      "amount": 5.75,
+      "category_id": 23,
+      "category_name": "Coffee Shops",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Morning coffee"
+    },
+    {
+      "date": "2024-09-07",
+      "description": "Restaurant Dinner",
+      "amount": 62.30,
+      "category_id": 22,
+      "category_name": "Restaurants",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Date night"
+    },
+    {
+      "date": "2024-09-08",
+      "description": "Gym Membership",
+      "amount": 49.99,
+      "category_id": 61,
+      "category_name": "Gym Membership",
+      "parent_category": "Health & Fitness",
+      "transaction_type": "expense",
+      "notes": "Monthly membership"
+    },
+    {
+      "date": "2024-09-09",
+      "description": "Grocery Store",
+      "amount": 103.28,
+      "category_id": 21,
+      "category_name": "Groceries",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Weekly groceries"
+    },
+    {
+      "date": "2024-09-10",
+      "description": "Gas Station",
+      "amount": 48.50,
+      "category_id": 31,
+      "category_name": "Gas",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Fill up"
+    },
+    {
+      "date": "2024-09-11",
+      "description": "Freelance Project Payment",
+      "amount": 850.00,
+      "category_id": 102,
+      "category_name": "Freelance",
+      "transaction_type": "income",
+      "notes": "Website design project"
+    },
+    {
+      "date": "2024-09-12",
+      "description": "Coffee Shop",
+      "amount": 4.50,
+      "category_id": 23,
+      "category_name": "Coffee Shops",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Afternoon coffee"
+    },
+    {
+      "date": "2024-09-13",
+      "description": "Movie Tickets",
+      "amount": 28.00,
+      "category_id": 42,
+      "category_name": "Movies & Events",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Weekend movie"
+    },
+    {
+      "date": "2024-09-14",
+      "description": "Internet Bill",
+      "amount": 59.99,
+      "category_id": 13,
+      "category_name": "Internet",
+      "parent_category": "Housing",
+      "transaction_type": "expense",
+      "notes": "Monthly internet"
+    },
+    {
+      "date": "2024-09-15",
+      "description": "Clothing Store",
+      "amount": 145.60,
+      "category_id": 51,
+      "category_name": "Clothing",
+      "parent_category": "Shopping",
+      "transaction_type": "expense",
+      "notes": "New work clothes"
+    },
+    {
+      "date": "2024-09-16",
+      "description": "Grocery Store",
+      "amount": 95.12,
+      "category_id": 21,
+      "category_name": "Groceries",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Weekly groceries"
+    },
+    {
+      "date": "2024-09-17",
+      "description": "Gas Station",
+      "amount": 52.30,
+      "category_id": 31,
+      "category_name": "Gas",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Fill up"
+    },
+    {
+      "date": "2024-09-18",
+      "description": "Restaurant Lunch",
+      "amount": 18.75,
+      "category_id": 22,
+      "category_name": "Restaurants",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Business lunch"
+    },
+    {
+      "date": "2024-09-19",
+      "description": "Car Insurance",
+      "amount": 118.50,
+      "category_id": 32,
+      "category_name": "Car Insurance",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Monthly premium"
+    },
+    {
+      "date": "2024-09-20",
+      "description": "Spotify Premium",
+      "amount": 9.99,
+      "category_id": 41,
+      "category_name": "Streaming Services",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Monthly subscription"
+    },
+    {
+      "date": "2024-09-21",
+      "description": "Pharmacy",
+      "amount": 24.50,
+      "category_id": 63,
+      "category_name": "Medications",
+      "parent_category": "Health & Fitness",
+      "transaction_type": "expense",
+      "notes": "Prescription refill"
+    },
+    {
+      "date": "2024-09-22",
+      "description": "Fast Food",
+      "amount": 12.40,
+      "category_id": 22,
+      "category_name": "Restaurants",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Quick lunch"
+    },
+    {
+      "date": "2024-09-23",
+      "description": "Grocery Store",
+      "amount": 118.65,
+      "category_id": 21,
+      "category_name": "Groceries",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Weekly groceries"
+    },
+    {
+      "date": "2024-09-24",
+      "description": "Gas Station",
+      "amount": 46.80,
+      "category_id": 31,
+      "category_name": "Gas",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Fill up"
+    },
+    {
+      "date": "2024-09-25",
+      "description": "Haircut",
+      "amount": 35.00,
+      "category_id": 71,
+      "category_name": "Haircuts",
+      "parent_category": "Personal Care",
+      "transaction_type": "expense",
+      "notes": "Monthly haircut"
+    },
+    {
+      "date": "2024-09-26",
+      "description": "Amazon Purchase",
+      "amount": 87.20,
+      "category_id": 53,
+      "category_name": "Home Goods",
+      "parent_category": "Shopping",
+      "transaction_type": "expense",
+      "notes": "Kitchen supplies"
+    },
+    {
+      "date": "2024-09-27",
+      "description": "Restaurant Dinner",
+      "amount": 75.40,
+      "category_id": 22,
+      "category_name": "Restaurants",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Celebration dinner"
+    },
+    {
+      "date": "2024-09-28",
+      "description": "Coffee Shop",
+      "amount": 6.25,
+      "category_id": 23,
+      "category_name": "Coffee Shops",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Weekend coffee"
+    },
+    {
+      "date": "2024-09-29",
+      "description": "Gas Station",
+      "amount": 51.75,
+      "category_id": 31,
+      "category_name": "Gas",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Fill up"
+    },
+    {
+      "date": "2024-09-30",
+      "description": "Emergency Fund Transfer",
+      "amount": 300.00,
+      "category_id": 81,
+      "category_name": "Emergency Fund",
+      "parent_category": "Savings & Investments",
+      "transaction_type": "expense",
+      "notes": "Monthly savings"
+    },
+    {
+      "date": "2024-09-30",
+      "description": "Retirement Contribution",
+      "amount": 200.00,
+      "category_id": 82,
+      "category_name": "Retirement",
+      "parent_category": "Savings & Investments",
+      "transaction_type": "expense",
+      "notes": "401k contribution"
+    },
+    {
+      "date": "2024-09-30",
+      "description": "Investment Dividends",
+      "amount": 142.50,
+      "category_id": 103,
+      "category_name": "Investment Returns",
+      "transaction_type": "income",
+      "notes": "Quarterly dividends"
+    },
+    {
+      "date": "2024-09-05",
+      "description": "Water Bill",
+      "amount": 35.60,
+      "category_id": 12,
+      "category_name": "Utilities",
+      "parent_category": "Housing",
+      "transaction_type": "expense",
+      "notes": "September water"
+    },
+    {
+      "date": "2024-09-08",
+      "description": "Target Run",
+      "amount": 42.35,
+      "category_id": 72,
+      "category_name": "Toiletries",
+      "parent_category": "Personal Care",
+      "transaction_type": "expense",
+      "notes": "Personal care items"
+    },
+    {
+      "date": "2024-09-12",
+      "description": "Book Store",
+      "amount": 34.99,
+      "category_id": 43,
+      "category_name": "Hobbies",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "New books"
+    },
+    {
+      "date": "2024-09-15",
+      "description": "Concert Tickets",
+      "amount": 95.00,
+      "category_id": 42,
+      "category_name": "Movies & Events",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Local band concert"
+    },
+    {
+      "date": "2024-09-18",
+      "description": "Oil Change",
+      "amount": 45.00,
+      "category_id": 33,
+      "category_name": "Maintenance",
+      "parent_category": "Transportation",
+      "transaction_type": "expense",
+      "notes": "Regular maintenance"
+    },
+    {
+      "date": "2024-09-20",
+      "description": "Doctor Visit",
+      "amount": 75.00,
+      "category_id": 62,
+      "category_name": "Doctor Visits",
+      "parent_category": "Health & Fitness",
+      "transaction_type": "expense",
+      "notes": "Annual checkup"
+    },
+    {
+      "date": "2024-09-22",
+      "description": "Electronics Store",
+      "amount": 125.99,
+      "category_id": 52,
+      "category_name": "Electronics",
+      "parent_category": "Shopping",
+      "transaction_type": "expense",
+      "notes": "Wireless headphones"
+    },
+    {
+      "date": "2024-09-24",
+      "description": "Steam Gaming",
+      "amount": 29.99,
+      "category_id": 43,
+      "category_name": "Hobbies",
+      "parent_category": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Video game purchase"
+    },
+    {
+      "date": "2024-09-02",
+      "description": "Coffee Shop",
+      "amount": 5.25,
+      "category_id": 23,
+      "category_name": "Coffee Shops",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Morning coffee"
+    },
+    {
+      "date": "2024-09-04",
+      "description": "Lunch Special",
+      "amount": 14.50,
+      "category_id": 22,
+      "category_name": "Restaurants",
+      "parent_category": "Food",
+      "transaction_type": "expense",
+      "notes": "Work lunch"
+    },
+    {
+      "date": "2024-09-11",
+      "description": "Misc Groceries",
+      "amount": 32.80,
+      "category_id": 2,
+      "category_name": "Food",
+      "transaction_type": "expense",
+      "notes": "Snacks and beverages"
+    },
+    {
+      "date": "2024-09-19",
+      "description": "Pet Store",
+      "amount": 48.20,
+      "category_id": 4,
+      "category_name": "Entertainment",
+      "transaction_type": "expense",
+      "notes": "Dog supplies"
+    },
+    {
+      "date": "2024-09-26",
+      "description": "Home Improvement",
+      "amount": 89.99,
+      "category_id": 1,
+      "category_name": "Housing",
+      "transaction_type": "expense",
+      "notes": "New shower curtain and bath mat"
+    }
+  ]
+}
