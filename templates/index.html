@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracker</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <header>
@@ -84,6 +85,12 @@
                 <div class="amount" id="currentBalance">$0</div>
                 <div class="subtitle">Available to spend</div>
             </div>
+        </div>
+
+        <div class="section chart-section">
+            <h2>Spending Comparison</h2>
+            <p class="chart-subtitle">Daily spending: This month vs. Previous month</p>
+            <canvas id="spendingChart"></canvas>
         </div>
 
         <div class="main-content">
@@ -377,6 +384,11 @@
 
             // Update checkmarks
             updateThemeCheckmarks();
+
+            // Re-render chart with new theme colors if it exists
+            if (spendingChart) {
+                loadSpendingComparison();
+            }
         }
 
         // Listen for system theme changes when in system mode
@@ -396,13 +408,185 @@
             }
         });
 
+        // Chart.js instance
+        let spendingChart = null;
+
         // Load data on page load
         async function loadData() {
             await loadCategories();
             await loadIncomeCategories();
             await loadTransactions();
             await loadCategorySpending();
+            await loadSpendingComparison();
             updateSummaryCards();
+        }
+
+        // Load and render spending comparison chart
+        async function loadSpendingComparison() {
+            try {
+                const response = await fetch(`${API_URL}/spending-comparison`);
+                const data = await response.json();
+                renderSpendingChart(data);
+            } catch (error) {
+                console.error('Error loading spending comparison:', error);
+            }
+        }
+
+        function renderSpendingChart(data) {
+            const ctx = document.getElementById('spendingChart');
+
+            // Destroy existing chart if it exists
+            if (spendingChart) {
+                spendingChart.destroy();
+            }
+
+            // Get month names
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+
+            const currentMonthName = monthNames[data.current_month.month - 1];
+            const prevMonthName = monthNames[data.previous_month.month - 1];
+
+            // Determine if dark mode is active
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#e0e0e0' : '#2c3e50';
+            const gridColor = isDarkMode ? '#404040' : '#ecf0f1';
+
+            // Create budget line datasets (flat lines at budget amount)
+            const currentBudgetLine = new Array(data.days.length).fill(data.current_month.budget);
+            const prevBudgetLine = new Array(data.days.length).fill(data.previous_month.budget);
+
+            spendingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.days,
+                    datasets: [
+                        {
+                            label: `${currentMonthName} ${data.current_month.year}`,
+                            data: data.current_month.data,
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: `${currentMonthName} Budget`,
+                            data: currentBudgetLine,
+                            backgroundColor: 'transparent',
+                            borderColor: 'rgba(52, 152, 219, 0.5)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0,
+                            pointRadius: 0,
+                            pointHoverRadius: 0
+                        },
+                        {
+                            label: `${prevMonthName} ${data.previous_month.year}`,
+                            data: data.previous_month.data,
+                            backgroundColor: 'rgba(149, 165, 166, 0.1)',
+                            borderColor: 'rgba(149, 165, 166, 1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: 'rgba(149, 165, 166, 1)',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: `${prevMonthName} Budget`,
+                            data: prevBudgetLine,
+                            backgroundColor: 'transparent',
+                            borderColor: 'rgba(149, 165, 166, 0.5)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0,
+                            pointRadius: 0,
+                            pointHoverRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: textColor,
+                                font: {
+                                    size: 12
+                                },
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDarkMode ? '#2d2d2d' : 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + context.parsed.y.toFixed(2);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Day of Month',
+                                color: textColor,
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Cumulative Spending ($)',
+                                color: textColor,
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            },
+                            ticks: {
+                                color: textColor,
+                                callback: function(value) {
+                                    return '$' + value.toFixed(0);
+                                }
+                            },
+                            grid: {
+                                color: gridColor
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // Load income categories from backend

@@ -171,6 +171,97 @@ def get_category_details(category_id):
         'subcategories': subcategories_data
     })
 
+@app.route('/api/spending-comparison', methods=['GET'])
+def get_spending_comparison():
+    from sqlalchemy import extract, func
+    from collections import defaultdict
+
+    # Get current date
+    now = datetime.now()
+    current_month = now.month
+    current_year = now.year
+
+    # Calculate previous month
+    if current_month == 1:
+        prev_month = 12
+        prev_year = current_year - 1
+    else:
+        prev_month = current_month - 1
+        prev_year = current_year
+
+    # Get current month's daily spending
+    current_spending = db.session.query(
+        extract('day', Transaction.date).label('day'),
+        func.sum(Transaction.amount).label('total')
+    ).filter(
+        Transaction.transaction_type == 'expense',
+        extract('month', Transaction.date) == current_month,
+        extract('year', Transaction.date) == current_year
+    ).group_by(extract('day', Transaction.date)).all()
+
+    # Get previous month's daily spending
+    prev_spending = db.session.query(
+        extract('day', Transaction.date).label('day'),
+        func.sum(Transaction.amount).label('total')
+    ).filter(
+        Transaction.transaction_type == 'expense',
+        extract('month', Transaction.date) == prev_month,
+        extract('year', Transaction.date) == prev_year
+    ).group_by(extract('day', Transaction.date)).all()
+
+    # Convert to dictionaries for easier lookup
+    current_by_day = {int(day): float(total) for day, total in current_spending}
+    prev_by_day = {int(day): float(total) for day, total in prev_spending}
+
+    # Get the current day of month to limit comparison
+    current_day = now.day
+
+    # Build arrays for all days up to current day with cumulative totals
+    days = list(range(1, current_day + 1))
+
+    # Calculate cumulative spending
+    current_data = []
+    prev_data = []
+    current_cumulative = 0
+    prev_cumulative = 0
+
+    for day in days:
+        current_cumulative += current_by_day.get(day, 0)
+        prev_cumulative += prev_by_day.get(day, 0)
+        current_data.append(round(current_cumulative, 2))
+        prev_data.append(round(prev_cumulative, 2))
+
+    # Get total budgeted amounts for both months
+    current_budget_total = db.session.query(func.sum(Budget.amount)).filter(
+        Budget.month == current_month,
+        Budget.year == current_year
+    ).join(Category).filter(
+        Category.category_type == 'expense'
+    ).scalar() or 0
+
+    prev_budget_total = db.session.query(func.sum(Budget.amount)).filter(
+        Budget.month == prev_month,
+        Budget.year == prev_year
+    ).join(Category).filter(
+        Category.category_type == 'expense'
+    ).scalar() or 0
+
+    return jsonify({
+        'days': days,
+        'current_month': {
+            'month': current_month,
+            'year': current_year,
+            'data': current_data,
+            'budget': round(float(current_budget_total), 2)
+        },
+        'previous_month': {
+            'month': prev_month,
+            'year': prev_year,
+            'data': prev_data,
+            'budget': round(float(prev_budget_total), 2)
+        }
+    })
+
 @app.route('/api/category-spending', methods=['GET'])
 def get_category_spending():
     from sqlalchemy import extract
