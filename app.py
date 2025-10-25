@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from flask_cors import CORS
-from models import db, Category, Transaction, Budget
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from models import db, User, Category, Transaction, Budget
 from config import Config
 from datetime import datetime
 
@@ -10,56 +11,158 @@ app.config.from_object(Config)
 CORS(app)
 db.init_app(app)
 
+# Flask-Login setup
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 # Create tables
 with app.app_context():
     db.create_all()
 
-# Routes
+# Authentication routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        username = data.get('username')
+        password = data.get('password')
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user, remember=True)
+            if request.is_json:
+                return jsonify({'success': True, 'message': 'Logged in successfully'}), 200
+            flash('Logged in successfully!', 'success')
+            return redirect(url_for('index'))
+        else:
+            if request.is_json:
+                return jsonify({'success': False, 'message': 'Invalid username or password'}), 401
+            flash('Invalid username or password', 'error')
+
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+
+        # Validation
+        if not username or not email or not password:
+            if request.is_json:
+                return jsonify({'success': False, 'message': 'All fields are required'}), 400
+            flash('All fields are required', 'error')
+            return render_template('register.html')
+
+        # Check if user already exists
+        if User.query.filter_by(username=username).first():
+            if request.is_json:
+                return jsonify({'success': False, 'message': 'Username already exists'}), 400
+            flash('Username already exists', 'error')
+            return render_template('register.html')
+
+        if User.query.filter_by(email=email).first():
+            if request.is_json:
+                return jsonify({'success': False, 'message': 'Email already registered'}), 400
+            flash('Email already registered', 'error')
+            return render_template('register.html')
+
+        # Create new user
+        user = User(username=username, email=email)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+
+        # Log in the user
+        login_user(user, remember=True)
+
+        if request.is_json:
+            return jsonify({'success': True, 'message': 'Account created successfully'}), 201
+        flash('Account created successfully!', 'success')
+        return redirect(url_for('index'))
+
+    return render_template('register.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+# Main routes
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
 # Category routes
 @app.route('/api/categories', methods=['GET'])
+@login_required
 def get_categories():
     category_type = request.args.get('type', 'expense')
-    categories = Category.query.filter_by(parent_id=None, category_type=category_type).all()
+    categories = Category.query.filter_by(
+        parent_id=None,
+        category_type=category_type,
+        user_id=current_user.id
+    ).all()
     return jsonify([cat.to_dict() for cat in categories])
 
 @app.route('/api/categories', methods=['POST'])
+@login_required
 def create_category():
     data = request.json
     category = Category(
         name=data['name'],
         parent_id=data.get('parent_id'),
-        category_type=data.get('category_type', 'expense')
+        category_type=data.get('category_type', 'expense'),
+        user_id=current_user.id
     )
     db.session.add(category)
     db.session.commit()
     return jsonify(category.to_dict()), 201
 
 @app.route('/api/categories/<int:id>', methods=['PUT'])
+@login_required
 def update_category(id):
-    category = Category.query.get_or_404(id)
+    category = Category.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     data = request.json
     category.name = data['name']
     db.session.commit()
     return jsonify(category.to_dict())
 
 @app.route('/api/categories/<int:id>', methods=['DELETE'])
+@login_required
 def delete_category(id):
-    category = Category.query.get_or_404(id)
+    category = Category.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(category)
     db.session.commit()
     return '', 204
 
 # Transaction routes
 @app.route('/api/transactions', methods=['GET'])
+@login_required
 def get_transactions():
-    transactions = Transaction.query.order_by(Transaction.date.desc()).all()
+    transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.date.desc()).all()
     return jsonify([t.to_dict() for t in transactions])
 
 @app.route('/api/transactions', methods=['POST'])
+@login_required
 def create_transaction():
     data = request.json
     transaction = Transaction(
@@ -68,15 +171,17 @@ def create_transaction():
         date=datetime.fromisoformat(data['date']),
         transaction_type=data['transaction_type'],
         category_id=data.get('category_id'),
-        notes=data.get('notes')
+        notes=data.get('notes'),
+        user_id=current_user.id
     )
     db.session.add(transaction)
     db.session.commit()
     return jsonify(transaction.to_dict()), 201
 
 @app.route('/api/transactions/<int:id>', methods=['PUT'])
+@login_required
 def update_transaction(id):
-    transaction = Transaction.query.get_or_404(id)
+    transaction = Transaction.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     data = request.json
 
     transaction.description = data['description']
@@ -90,13 +195,15 @@ def update_transaction(id):
     return jsonify(transaction.to_dict())
 
 @app.route('/api/transactions/<int:id>', methods=['DELETE'])
+@login_required
 def delete_transaction(id):
-    transaction = Transaction.query.get_or_404(id)
+    transaction = Transaction.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     db.session.delete(transaction)
     db.session.commit()
     return '', 204
 
 @app.route('/api/category-details/<int:category_id>', methods=['GET'])
+@login_required
 def get_category_details(category_id):
     from sqlalchemy import extract
 
@@ -108,20 +215,21 @@ def get_category_details(category_id):
         month = now.month
         year = now.year
 
-    # Get the category
-    category = Category.query.get_or_404(category_id)
+    # Get the category and verify it belongs to current user
+    category = Category.query.filter_by(id=category_id, user_id=current_user.id).first_or_404()
 
     # Get budget for parent category
     parent_budget = Budget.query.filter_by(
         category_id=category_id,
         month=month,
         year=year
-    ).first()
+    ).join(Category).filter(Category.user_id == current_user.id).first()
 
     # Get spending for parent category in the current month (not including subcategories)
     parent_spent = db.session.query(db.func.sum(Transaction.amount)).filter(
         Transaction.category_id == category_id,
         Transaction.transaction_type == 'expense',
+        Transaction.user_id == current_user.id,
         extract('month', Transaction.date) == month,
         extract('year', Transaction.date) == year
     ).scalar() or 0
@@ -136,11 +244,12 @@ def get_category_details(category_id):
             category_id=sub.id,
             month=month,
             year=year
-        ).first()
+        ).join(Category).filter(Category.user_id == current_user.id).first()
 
         sub_spent = db.session.query(db.func.sum(Transaction.amount)).filter(
             Transaction.category_id == sub.id,
             Transaction.transaction_type == 'expense',
+            Transaction.user_id == current_user.id,
             extract('month', Transaction.date) == month,
             extract('year', Transaction.date) == year
         ).scalar() or 0
@@ -172,6 +281,7 @@ def get_category_details(category_id):
     })
 
 @app.route('/api/spending-comparison', methods=['GET'])
+@login_required
 def get_spending_comparison():
     from sqlalchemy import extract, func
     from collections import defaultdict
@@ -195,6 +305,7 @@ def get_spending_comparison():
         func.sum(Transaction.amount).label('total')
     ).filter(
         Transaction.transaction_type == 'expense',
+        Transaction.user_id == current_user.id,
         extract('month', Transaction.date) == current_month,
         extract('year', Transaction.date) == current_year
     ).group_by(extract('day', Transaction.date)).all()
@@ -205,6 +316,7 @@ def get_spending_comparison():
         func.sum(Transaction.amount).label('total')
     ).filter(
         Transaction.transaction_type == 'expense',
+        Transaction.user_id == current_user.id,
         extract('month', Transaction.date) == prev_month,
         extract('year', Transaction.date) == prev_year
     ).group_by(extract('day', Transaction.date)).all()
@@ -236,14 +348,16 @@ def get_spending_comparison():
         Budget.month == current_month,
         Budget.year == current_year
     ).join(Category).filter(
-        Category.category_type == 'expense'
+        Category.category_type == 'expense',
+        Category.user_id == current_user.id
     ).scalar() or 0
 
     prev_budget_total = db.session.query(func.sum(Budget.amount)).filter(
         Budget.month == prev_month,
         Budget.year == prev_year
     ).join(Category).filter(
-        Category.category_type == 'expense'
+        Category.category_type == 'expense',
+        Category.user_id == current_user.id
     ).scalar() or 0
 
     return jsonify({
@@ -263,6 +377,7 @@ def get_spending_comparison():
     })
 
 @app.route('/api/category-spending', methods=['GET'])
+@login_required
 def get_category_spending():
     from sqlalchemy import extract
 
@@ -275,7 +390,11 @@ def get_category_spending():
         month = now.month
         year = now.year
 
-    categories = Category.query.filter_by(parent_id=None, category_type='expense').all()
+    categories = Category.query.filter_by(
+        parent_id=None,
+        category_type='expense',
+        user_id=current_user.id
+    ).all()
     spending = []
 
     for cat in categories:
@@ -283,6 +402,7 @@ def get_category_spending():
         total = db.session.query(db.func.sum(Transaction.amount)).filter(
             Transaction.category_id == cat.id,
             Transaction.transaction_type == 'expense',
+            Transaction.user_id == current_user.id,
             extract('month', Transaction.date) == month,
             extract('year', Transaction.date) == year
         ).scalar() or 0
@@ -293,6 +413,7 @@ def get_category_spending():
             sub_amount = db.session.query(db.func.sum(Transaction.amount)).filter(
                 Transaction.category_id == sub.id,
                 Transaction.transaction_type == 'expense',
+                Transaction.user_id == current_user.id,
                 extract('month', Transaction.date) == month,
                 extract('year', Transaction.date) == year
             ).scalar() or 0
@@ -305,7 +426,7 @@ def get_category_spending():
             category_id=cat.id,
             month=month,
             year=year
-        ).first()
+        ).join(Category).filter(Category.user_id == current_user.id).first()
 
         parent_budget = budget.amount if budget else 0
         sub_budget_total = 0
@@ -315,7 +436,7 @@ def get_category_spending():
                 category_id=sub.id,
                 month=month,
                 year=year
-            ).first()
+            ).join(Category).filter(Category.user_id == current_user.id).first()
             if sub_budget:
                 sub_budget_total += sub_budget.amount
 
@@ -339,28 +460,39 @@ def get_category_spending():
 
 # Budget routes
 @app.route('/api/budgets', methods=['GET'])
+@login_required
 def get_budgets():
     month = request.args.get('month', type=int)
     year = request.args.get('year', type=int)
-    
+
     if not month or not year:
         now = datetime.now()
         month = now.month
         year = now.year
-    
-    budgets = Budget.query.filter_by(month=month, year=year).all()
+
+    budgets = Budget.query.filter_by(
+        month=month,
+        year=year
+    ).join(Category).filter(Category.user_id == current_user.id).all()
     return jsonify([b.to_dict() for b in budgets])
 
 @app.route('/api/budgets', methods=['POST'])
+@login_required
 def create_or_update_budget():
     data = request.json
-    
+
+    # Verify the category belongs to the current user
+    category = Category.query.filter_by(
+        id=data['category_id'],
+        user_id=current_user.id
+    ).first_or_404()
+
     existing_budget = Budget.query.filter_by(
         category_id=data['category_id'],
         month=data['month'],
         year=data['year']
-    ).first()
-    
+    ).join(Category).filter(Category.user_id == current_user.id).first()
+
     if existing_budget:
         existing_budget.amount = data['amount']
         db.session.commit()
@@ -370,20 +502,25 @@ def create_or_update_budget():
             category_id=data['category_id'],
             amount=data['amount'],
             month=data['month'],
-            year=data['year']
+            year=data['year'],
+            user_id=current_user.id
         )
         db.session.add(budget)
         db.session.commit()
         return jsonify(budget.to_dict()), 201
 
 @app.route('/api/budgets/<int:id>', methods=['DELETE'])
+@login_required
 def delete_budget(id):
-    budget = Budget.query.get_or_404(id)
+    budget = Budget.query.filter_by(id=id).join(Category).filter(
+        Category.user_id == current_user.id
+    ).first_or_404()
     db.session.delete(budget)
     db.session.commit()
     return '', 204
 
 @app.route('/api/budget-overview', methods=['GET'])
+@login_required
 def get_budget_overview():
     month = request.args.get('month', type=int)
     year = request.args.get('year', type=int)
@@ -396,7 +533,11 @@ def get_budget_overview():
 
     from sqlalchemy import extract
 
-    categories = Category.query.filter_by(parent_id=None, category_type=category_type).all()
+    categories = Category.query.filter_by(
+        parent_id=None,
+        category_type=category_type,
+        user_id=current_user.id
+    ).all()
     overview = []
 
     for cat in categories:
@@ -404,12 +545,13 @@ def get_budget_overview():
             category_id=cat.id,
             month=month,
             year=year
-        ).first()
+        ).join(Category).filter(Category.user_id == current_user.id).first()
 
         if category_type == 'income':
             actual = db.session.query(db.func.sum(Transaction.amount)).filter(
                 Transaction.category_id == cat.id,
                 Transaction.transaction_type == 'income',
+                Transaction.user_id == current_user.id,
                 extract('month', Transaction.date) == month,
                 extract('year', Transaction.date) == year
             ).scalar() or 0
@@ -417,6 +559,7 @@ def get_budget_overview():
             actual = db.session.query(db.func.sum(Transaction.amount)).filter(
                 Transaction.category_id == cat.id,
                 Transaction.transaction_type == 'expense',
+                Transaction.user_id == current_user.id,
                 extract('month', Transaction.date) == month,
                 extract('year', Transaction.date) == year
             ).scalar() or 0
@@ -431,12 +574,13 @@ def get_budget_overview():
                 category_id=sub.id,
                 month=month,
                 year=year
-            ).first()
+            ).join(Category).filter(Category.user_id == current_user.id).first()
 
             if category_type == 'income':
                 sub_actual = db.session.query(db.func.sum(Transaction.amount)).filter(
                     Transaction.category_id == sub.id,
                     Transaction.transaction_type == 'income',
+                    Transaction.user_id == current_user.id,
                     extract('month', Transaction.date) == month,
                     extract('year', Transaction.date) == year
                 ).scalar() or 0
@@ -444,6 +588,7 @@ def get_budget_overview():
                 sub_actual = db.session.query(db.func.sum(Transaction.amount)).filter(
                     Transaction.category_id == sub.id,
                     Transaction.transaction_type == 'expense',
+                    Transaction.user_id == current_user.id,
                     extract('month', Transaction.date) == month,
                     extract('year', Transaction.date) == year
                 ).scalar() or 0
